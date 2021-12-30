@@ -1,0 +1,1 @@
+python test_tensorrt_cuda.py --encoder_path=./onnx_models/encoder_xsum.onnx --decoder_path=./onnx_models/decoder_lm_xsum.onnx --enable_profiling=True --pegasus_model_dir="google/pegasus-xsum" --use_tensorrt=True
