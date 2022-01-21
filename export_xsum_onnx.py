@@ -18,7 +18,7 @@ decoder = pegasus_model.model.decoder
 lm_head = pegasus_model.lm_head
 
 tokenizer = PegasusTokenizer.from_pretrained(model_name)
-dummy_input = tokenizer("This is an amazing sentence.", return_tensors='pt')
+export_text = "This is an amazing sentence."
 
 def export_encoder(model, inp, exported_model_path):
     model.eval()
@@ -69,9 +69,10 @@ class DecoderWithLMHead(torch.nn.Module):
                               'log_softmax': {0:'batch'},
                               'indices': {0:'batch'},
                           })
- 
-export_encoder(encoder, dummy_input['input_ids'], output_encoder_path)
-decoder_lm_head = DecoderWithLMHead(decoder, lm_head, pegasus_model.final_logits_bias)
-last_state = encoder(input_ids=dummy_input['input_ids']).last_hidden_state
-decoder_inputs = torch.tensor([[0]])
-export_decoder(decoder_lm_head, decoder_inputs, last_state, output_decoder_path)
+
+def export_encoder_and_decoder(tokenizer, model, export_text, output_encoder_path, output_decoder_path):
+    export_input = tokenizer(export_text, return_tensors='pt')
+    export_encoder(model.model.encoder, export_input['input_ids'], output_encoder_path)
+    decoder_lm_head = DecoderWithLMHead(model.model.decoder, model.lm_head, model.final_logits_bias)
+    export_decoder(decoder_lm_head, export_input['input_ids'], model.model.encoder(input_ids=export_input['input_ids']
+export_encoder_and_decoder(ori_tokenizer, ori_pegasus_model, export_text, output_encoder_path, output_decoder_path)
